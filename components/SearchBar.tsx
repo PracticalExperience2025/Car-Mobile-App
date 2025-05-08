@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 export default function SearchBar({ onFilterPress }: { onFilterPress: () => void }) {
   return (
     <View style={styles.container}>
-      <TextInput placeholder="Search cars..." style={styles.input} />
+      <TextInput placeholder="Търсене на коли..." style={styles.input} />
       <Pressable onPress={onFilterPress} style={styles.button}>
         <Ionicons name="options" size={20} color="#fff" />
       </Pressable>

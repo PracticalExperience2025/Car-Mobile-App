@@ -1,7 +1,19 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect } from 'react';
-import registerForPushNotificationsAsync from '@/permissions/pushNotificationPermission';
+import { Provider } from 'react-redux';
+import { store } from '@/store/store';
+import { registerForPushNotificationsAsync } from '@/permissions/pushNotificationPermission';
+
+import * as Notifications from 'expo-notifications';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
 
 export default function Layout() {
 
@@ -10,13 +22,16 @@ export default function Layout() {
   }, []);
   
   return (
-    <Tabs screenOptions={({ route }) => ({
+    <Provider store={store}>
+    <Tabs
+    initialRouteName='login' 
+    screenOptions={({ route }) => ({
       tabBarIcon: ({ color, size }) => {
         let iconName: keyof typeof Ionicons.glyphMap;
 
-        if (route.name === 'index') iconName = 'car';
+        if (route.name === 'login') iconName = 'car';
         else if (route.name === 'settings') iconName = 'settings';
-        else if (route.name === 'login') iconName = 'log-in';
+        else if (route.name === 'index') iconName = 'log-in';
         else iconName = 'home';
 
         return <Ionicons name={iconName} size={size} color={color} />;
@@ -26,9 +41,10 @@ export default function Layout() {
       tabBarStyle: { paddingBottom: 5 },
       headerShown: false,
     })}>
-            <Tabs.Screen name="login" options={{ title: '' }} />
       <Tabs.Screen name="index" options={{ title: '' }} />
+      <Tabs.Screen name="login" options={{ title: '' }} />
       <Tabs.Screen name="settings" options={{ title: '' }} />
     </Tabs>
+    </Provider>
   );
 }

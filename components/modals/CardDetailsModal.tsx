@@ -8,16 +8,16 @@ export default function CarDetailsModal({ visible, onClose, car }: any) {
     <Modal visible={visible} animationType="slide">
       <ScrollView contentContainerStyle={styles.modalContent}>
         <Text style={styles.title}>{car.brand} {car.model}</Text>
-        <Text style={styles.field}>License: {car.license}</Text>
-        <Text style={styles.field}>Vignette Date: {car.vignetteDate}</Text>
-        <Text style={styles.field}>Registration Date: {car.registrationDate}</Text>
-        <Text style={styles.field}>Insurance Date: {car.insuranceDate}</Text>
-        <Text style={styles.field}>Inspection Date: {car.inspectionDate}</Text>
-        <Text style={styles.field}>Images:</Text>
+        <Text style={styles.field}>Регистрационен номер: {car.license}</Text>
+        <Text style={styles.field}>Винетка: {car.vignetteDate}</Text>
+        <Text style={styles.field}>Регистрация: {car.registrationDate}</Text>
+        <Text style={styles.field}>Застраховка: {car.insuranceDate}</Text>
+        <Text style={styles.field}>Технически преглед: {car.inspectionDate}</Text>
+        <Text style={styles.field}>Снимки: </Text>
         {car.images?.map((img: string, idx: number) => (
           <Image key={idx} source={{ uri: img }} style={styles.image} />
         ))}
-        <Button title="Close" onPress={onClose} />
+        <Button title="Затваряне" onPress={onClose} />
       </ScrollView>
     </Modal>
   );

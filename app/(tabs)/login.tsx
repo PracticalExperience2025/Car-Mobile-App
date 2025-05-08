@@ -1,64 +1,57 @@
-import { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, Modal, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router';
+import { View, StyleSheet, FlatList, Text } from 'react-native';
+import CarTable from '@/components/CarList';
+import CarHeader from '@/components/CarHeader';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
 
-export default function LoginScreen() {
-  const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [registerVisible, setRegisterVisible] = useState(false);
-  const [registerEmail, setRegisterEmail] = useState('');
-  const [registerPassword, setRegisterPassword] = useState('');
+export default function HomeScreen() {
 
-  const login = async () => {
+  const [cars, setCars] = useState([]);
+  const [filteredCars, setFilteredCars] = useState([]);
+  const [refresh, setRefresh] = useState(false); // used to re-trigger fetching
+
+  const user = useSelector((state: RootState) => state.user);
+
+  const fetchCars = async () => {
     try {
-      const res = await axios.post('http://localhost:3001/auth/login', { email, password });
-      await AsyncStorage.setItem('token', res.data.access_token);
-      router.replace('/');
+      if(user.id) {
+        const res = await axios.get(`https://car-app-backend-1o4y.onrender.com/cars/user/${user.id}`);
+        setCars(res.data);
+        setFilteredCars(res.data);
+      }
     } catch (err) {
-      Alert.alert('Login Failed', 'Invalid credentials');
+      console.error(err);
     }
   };
 
-  const register = async () => {
-    try {
-      await axios.post('http://localhost:3001/users/register', { email: registerEmail, password: registerPassword });
-      Alert.alert('Registration Successful', 'You can now log in.');
-      setRegisterVisible(false);
-    } catch (err) {
-      Alert.alert('Registration Failed', 'Please try again.');
-    }
+  useEffect(() => {
+    fetchCars();
+  }, [refresh, user]); // re-fetch cars when `refresh` changes
+
+
+  const handleApplyFilters = (filters: Record<string, string | boolean>) => {
+    const filtered = cars.filter((car: any) => {
+      for (const [key, value] of Object.entries(filters)) {
+        if (key === 'insuredOnly' && value && !car.insured) return false;
+        if (typeof value === 'string' && value && !car[key.toLowerCase()]?.toString().includes(value)) return false;
+      }
+      return true;
+    });
+    setFilteredCars(filtered);
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Staff Login</Text>
-      <TextInput style={styles.input} placeholder="Email" onChangeText={setEmail} />
-      <TextInput style={styles.input} placeholder="Password" secureTextEntry onChangeText={setPassword} />
-      <Button title="Login" onPress={login} />
-      <TouchableOpacity onPress={() => setRegisterVisible(true)}>
-        <Text style={styles.registerLink}>Don't have an account? Register</Text>
-      </TouchableOpacity>
-
-      <Modal visible={registerVisible} animationType="slide" onRequestClose={() => setRegisterVisible(false)}>
-        <View style={styles.modal}>
-          <Text style={styles.title}>Register</Text>
-          <TextInput style={styles.input} placeholder="Email" onChangeText={setRegisterEmail} />
-          <TextInput style={styles.input} placeholder="Password" secureTextEntry onChangeText={setRegisterPassword} />
-          <Button title="Register" onPress={register} />
-          <Button title="Cancel" onPress={() => setRegisterVisible(false)} />
-        </View>
-      </Modal>
+      <CarHeader onAddSuccess={() => setRefresh(prev => !prev)} onApplyFilters={handleApplyFilters}/>
+      <Text style={styles.header}>Налични автомобили</Text>
+      <CarTable cars={filteredCars} onCarDeleted={() => setRefresh(prev => !prev)}/>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: 20 },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
-  input: { borderWidth: 1, borderColor: '#ccc', padding: 10, marginVertical: 10, borderRadius: 5 },
-  registerLink: { color: 'blue', marginTop: 10, textAlign: 'center' },
-  modal: { flex: 1, justifyContent: 'center', padding: 20 },
+  container: { flex: 1, padding: 20 },
+  header: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 },
 });

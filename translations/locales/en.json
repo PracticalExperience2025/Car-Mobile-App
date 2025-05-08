@@ -1,0 +1,36 @@
+{
+    "login": {
+        "title": "Staff login",
+        "no_account": "Don't have an account? Register",
+        "register": "Register",
+        "cancel": "Cancel",
+        "login": "Login",
+        "password": "Password"
+    },
+    "settings": {
+        "title": "Settings",
+        "language": "Language",
+        "push_not": "Push notification",
+        "email_not": "Email notification",
+        "current_password": "Current Password",
+        "new_password": "New Password",
+        "confirm": "Confirm New Password",
+        "submit": "Submit",
+        "change_passoword": "Change Password",
+        "logout": "Logout"
+    },
+    "carlist": {
+        "brand": "Brand",
+        "model": "Model",
+        "license": "License",
+        "vignette": "Vignette",
+        "insurance": "Insurance",
+        "inspection": "Inspection",
+        "details": "Details"
+    },
+    "modal": {
+        "apply": "Apply",
+        "save": "Save",
+        "cancel": "Cancel"
+    }
+}

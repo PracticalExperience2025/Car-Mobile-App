@@ -5,7 +5,7 @@ import AddCarModal from './modals/AddCarModal';
 import FilterModal from './modals/FilterModal';
 import SearchBar from './SearchBar';
 
-export default function CarHeader({ onAddSuccess }: { onAddSuccess: () => void }) {
+export default function CarHeader({ onAddSuccess, onApplyFilters }: { onAddSuccess: () => void, onApplyFilters: (filters: Record<string, string | boolean>) => void }) {
   const [isAddVisible, setAddVisible] = useState(false);
   const [isFilterVisible, setFilterVisible] = useState(false);
 
@@ -22,7 +22,7 @@ export default function CarHeader({ onAddSuccess }: { onAddSuccess: () => void }
           setAddVisible(false);
           onAddSuccess(); // Notify parent to re-fetch
         }}/>
-      <FilterModal visible={isFilterVisible} onClose={() => setFilterVisible(false)} />
+      <FilterModal visible={isFilterVisible} onClose={() => setFilterVisible(false)} onApply={onApplyFilters}/>
     </View>
   );
 }

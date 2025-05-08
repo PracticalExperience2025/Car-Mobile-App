@@ -1,18 +1,50 @@
-import { Modal, View, Text, Switch, Button, StyleSheet } from 'react-native';
+import { Modal, View, Text, Switch, Button, StyleSheet, TextInput, ScrollView } from 'react-native';
 import { useState } from 'react';
 
-export default function FilterModal({ visible, onClose }: { visible: boolean; onClose: () => void }) {
+const categories = [
+  'Марка',
+  'Модел',
+  'Регистрационен номер',
+  'Винетка',
+  'Регистрация',
+  'Застраховка',
+  'Преглед',
+];
+
+export default function FilterModal({ visible, onClose, onApply }: { visible: boolean; onClose: () => void; onApply: (filters: Record<string, string | boolean>) => void }) {
   const [insuredOnly, setInsuredOnly] = useState(false);
+  const [filters, setFilters] = useState<Record<string, string | boolean>>({});
+
+  const handleInputChange = (key: string, value: string) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleApply = () => {
+    onApply({ ...filters, insuredOnly });
+    onClose();
+  };
 
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
       <View style={styles.modal}>
-        <Text style={styles.title}>Filter Options</Text>
-        <View style={styles.row}>
-          <Text>Insured Only</Text>
-          <Switch value={insuredOnly} onValueChange={setInsuredOnly} />
-        </View>
-        <Button title="Apply" onPress={onClose} />
+        <Text style={styles.title}>Опции за филтриране</Text>
+        <ScrollView contentContainerStyle={styles.scroll}>
+          {categories.map((category) => (
+            <View key={category} style={styles.row}>
+              <Text style={styles.label}>{category}</Text>
+              <TextInput
+                style={styles.input}
+                placeholder={`Въведи ${category}`}
+                onChangeText={(value) => handleInputChange(category, value)}
+              />
+            </View>
+          ))}
+          <View style={styles.row}>
+            <Text style={styles.label}>Само застраховани</Text>
+            <Switch value={insuredOnly} onValueChange={setInsuredOnly} />
+          </View>
+        </ScrollView>
+        <Button title="Запазавне" onPress={handleApply} />
       </View>
     </Modal>
   );
@@ -26,12 +58,30 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   title: {
-    fontSize: 18,
+    fontSize: 24,
+    fontWeight: 'bold',
     marginBottom: 20,
+    textAlign: 'center',
+  },
+  scroll: {
+    paddingVertical: 10,
   },
   row: {
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 20,
+    marginBottom: 15,
+  },
+  label: {
+    fontSize: 16,
+    flex: 1,
+  },
+  input: {
+    flex: 2,
+    padding: 8,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    backgroundColor: '#f9f9f9',
   },
 });
